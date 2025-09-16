@@ -32,7 +32,7 @@ double Interval::max_distance(double end) const {
 }
 
 void Interval::compute_min_distance(double stop) {
-  assert(stop > m_start);
+  assert(stop >= m_start);
 
   if (m_d == GEODESIC_INF) {
     m_min = GEODESIC_INF;
