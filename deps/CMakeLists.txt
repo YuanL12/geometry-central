@@ -106,6 +106,23 @@ option(SUITESPARSE "Enable SuiteSparse." ON)
 if (SUITESPARSE)
   message("-- Searching for SuiteSparse.")
 
+  # Prefer a repository-local SuiteSparse checkout first (for example a submodule
+  # at <repo>/deps/SuiteSparse), then fall back to system paths.
+  get_filename_component(GC_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" DIRECTORY)
+  get_filename_component(GC_PROJECT_ROOT "${GC_PROJECT_ROOT}" DIRECTORY)
+  get_filename_component(GC_PROJECT_ROOT "${GC_PROJECT_ROOT}" DIRECTORY)
+  set(SUITESPARSE_LOCAL_DIR "${GC_PROJECT_ROOT}/deps/SuiteSparse" CACHE PATH
+      "Path to a local SuiteSparse source/install tree")
+
+  if(EXISTS "${SUITESPARSE_LOCAL_DIR}")
+    message(STATUS "--    checking local SuiteSparse at ${SUITESPARSE_LOCAL_DIR}")
+    list(APPEND SUITESPARSE_INCLUDE_DIR_HINTS
+      "${SUITESPARSE_LOCAL_DIR}/include"
+      "${SUITESPARSE_LOCAL_DIR}/include/suitesparse")
+    list(APPEND SUITESPARSE_LIBRARY_DIR_HINTS
+      "${SUITESPARSE_LOCAL_DIR}/lib")
+  endif()
+
   # Check for SuiteSparse and dependencies.
   find_package(SuiteSparse)
   if (SUITESPARSE_FOUND)
